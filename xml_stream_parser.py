@@ -63,19 +63,19 @@ def main(argv):
                     categories[category["id"]] = category
         i = 0
         for cat in categories.keys():
-            parents = getParents(categories, cat)
+            #parents = getParents(categories, cat)
             #print parents
             #par_names = []
             #for par in parents:
             #    par_names.append(categories[par]["descr"])
-
+            
             try:
                 dummy = matched_cats[cat]
             except KeyError:
-                hier_match = w2vconverter.match_cat(hierarchy, w2v, cat)
-                matched_cats[cat] = hier_match
-
-                #print i, "\t", categories[cat]["descr"], "\t", hier_match
+                hier_match = w2vconverter.match_cat(hierarchy, w2v, categories[cat]["descr"])
+                matched_cats[cat] = hier_match[0]
+                i = i + 1
+                print i, "\t", categories[cat]["descr"], "\t", hier_match[0], "\t", hier_match[1]
 
         for child in coord.getchildren():
             if child.tag == "offers":
@@ -86,12 +86,9 @@ def main(argv):
                             try:
                                 match = matched_cats[field.text]
                                 #print cat_name, ": ", match
-                                i = 0
-                                for m in match:
-                                    newTag = etree.Element( "matchedCategory" + str(i))
-                                    newTag.text = m.decode("utf-8")
-                                    offer.append(newTag)
-                                    i = i + 1
+                                newTag = etree.Element( "matchedCategory" )
+                                newTag.text = match.decode("utf-8")
+                                offer.append(newTag)
                             except KeyError:
                                 next
     tree  = etree.ElementTree(catalogue)
